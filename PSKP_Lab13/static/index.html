@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>PSKP_Lab13</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+</head>
+
+<body>
+    <div>
+        <div>
+            <button type="button" id="get">GET</button>
+            <button type="button" id="post">POST</button>
+            <button type="button" id="put">PUT</button>
+            <button type="button" id="delete">DELETE</button>
+
+            <div>
+                <label for="teacher">Teacher</label>
+                <input type="text" name="teacher" id="input_teacher">
+            </div>
+
+            <div>
+                <label for="teacher_name">Teacher name</label>
+                <input type="text" name="teacher_name" id="input_teacher_name">
+            </div>
+
+            <div>
+                <label for="pulpit">Pulpit</label>
+                <input type="text" name="pulpit" id="input_pulpit">
+            </div>
+        </div>
+
+        <div id="result"></div>
+    </div>
+</body>
+
+<script>
+    const baseUrl = '/api/teachers/';
+    const result = document.getElementById("result");
+
+    $("#get").click(function get() {
+        fetch(baseUrl)
+            .then(responce => responce.json())
+            .then(responseText => {
+                result.innerHTML =
+                    '<pre style="white-space: pre-wrap">' +
+                    JSON.stringify(responseText, null, 4) +
+                    '</pre>';
+            });
+    });
+
+
+    $("#post").click(function post() {
+        const data = {
+            teacher: $("#input_teacher").val(),
+            teacher_name: $("#input_teacher_name").val(),
+            pulpit: $("#input_pulpit").val()
+        }
+        if (data.teacher == '' || data.teacher_name == '' || data.pulpit == '') {
+            result.innerHTML = 'Fill all inputs';
+            return;
+        }
+
+        fetch(baseUrl, {
+            method: 'POST',
+            body: JSON.stringify(data),
+            headers: { 'content-type': 'application/json' }
+        })
+            .then(responce => responce.json())
+            .then(responseText => {
+                result.innerHTML =
+                    '<pre style="white-space: pre-wrap">' +
+                    JSON.stringify(responseText, null, 4) +
+                    '</pre>';
+            });
+    });
+
+
+    $("#put").click(function post() {
+        const data = {
+            teacher: $("#input_teacher").val(),
+            teacher_name: $("#input_teacher_name").val(),
+            pulpit: $("#input_pulpit").val()
+        }
+        if (data.teacher == '' || data.teacher_name == '' || data.pulpit == '') {
+            result.innerHTML = 'Fill all inputs';
+            return;
+        }
+
+        fetch(baseUrl, {
+            method: 'PUT',
+            body: JSON.stringify(data),
+            headers: { 'content-type': 'application/json' }
+        })
+            .then(responce => responce.json())
+            .then(responseText => {
+                result.innerHTML =
+                    '<pre style="white-space: pre-wrap">' +
+                    JSON.stringify(responseText, null, 4) +
+                    '</pre>';
+            });
+    });
+
+
+    $("#delete").click(function post() {
+        const teacher = $("#input_teacher").val();
+        if (teacher == '') {
+            result.innerHTML = 'Enter teacher';
+            return;
+        }
+
+        fetch(baseUrl + teacher, {
+            method: 'DELETE',
+            headers: { 'content-type': 'application/json' }
+        })
+            .then(responce => responce.json())
+            .then(responseText => {
+                result.innerHTML =
+                    '<pre style="white-space: pre-wrap">' +
+                    JSON.stringify(responseText, null, 4) +
+                    '</pre>';
+            });
+    })
+</script>
+
+</html>

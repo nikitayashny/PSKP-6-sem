@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>PSKP-14</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+</head>
+<body>
+    <div>
+        <div>
+            <button type="button" id="get">GET</button>
+            <button type="button" id="post">POST</button>
+            <button type="button" id="put">PUT</button>
+            <button type="button" id="delete">DELETE</button>
+            <div>
+                <label for="pulpit">Pulpit</label>
+                <input type="text" name="pulpit" id="input_pulpit">
+            </div>
+            <div>
+                <label for="pulpit_name">Pulpit name</label>
+                <input type="text" name="pulpit_name" id="input_pulpit_name">
+            </div>
+            <div>
+                <label for="faculty">Faculty</label>
+                <input type="text" name="faculty" id="input_faculty">
+            </div>
+            <div>
+                <label for="faculty_name">Faculty name</label>
+                <input type="text" name="faculty_name" id="input_faculty_name" placeholder="Enter value in POST request to add a faculty_name">
+            </div>
+        </div>
+        <div>
+            <div id="result"></div>
+            <div>
+                <button id="prev" type="button" style="visibility: hidden;">Show previous 10</button>
+                <button id="page" style="visibility: hidden;" disabled>1</button>
+                <button id="next" type="button" style="visibility: hidden;">Show next 10</button>
+            </div>
+        </div>
+    </div>
+</body>
+<script>
+    const baseUrl = '/api/pulpits/';
+    const result = document.getElementById("result");
+    const page = document.getElementById("page");
+    let arrayOfPulpits = [];
+    let countClicks = 0;
+    let start = 0;
+    let end = 10;
+
+
+    $("#next").click(function next() {
+        console.log('[before] next() countClicks: ', countClicks);
+        countClicks++;
+
+        let nextArray = arrayOfPulpits.slice(start + (countClicks + 1) * 10, end + (countClicks + 1) * 10);
+        console.log('next array: ', nextArray)
+
+        page.innerHTML = countClicks + 1;
+        result.innerHTML =
+            '<pre style="white-space: pre-wrap">' +
+            JSON.stringify(arrayOfPulpits.slice(start + countClicks * 10, end + countClicks * 10), null, 4) +
+            '</pre>';
+
+        if (nextArray.length === 0)
+            $("#next").css("visibility", "hidden");
+        else
+            $("#next").css("visibility", "visible");
+
+        $("#prev").css("visibility", "visible");
+        console.log('[after] next() countClicks: ', countClicks);
+        console.log('==============================================================');
+    });
+
+
+    $("#prev").click(function prev() {
+        console.log('[before] prev() countClicks: ', countClicks);
+        countClicks--;
+
+        let prevArray = arrayOfPulpits.slice(start + (countClicks - 1) * 10, end + (countClicks - 1) * 10);
+        console.log('prev array: ', prevArray)
+
+        page.innerHTML = countClicks + 1;
+        result.innerHTML =
+            '<pre style="white-space: pre-wrap">' +
+            JSON.stringify(arrayOfPulpits.slice(start + countClicks * 10, end + countClicks * 10), null, 4) +
+            '</pre>';
+
+        if (prevArray.length === 0)
+            $("#prev").css("visibility", "hidden");
+        else
+            $("#prev").css("visibility", "visible");
+
+        $("#next").css("visibility", "visible");
+        console.log('[after] prev() countClicks: ', countClicks);
+        console.log('==============================================================');
+    });
+
+
+    $("#get").click(function get() {
+        countClicks = 0;
+
+        fetch(baseUrl)
+            .then(responce => responce.json())
+            .then(responseText => {
+                arrayOfPulpits = responseText;
+                const length = arrayOfPulpits.length;
+
+                console.log('start: ', start);
+                console.log('end: ', end);
+                console.log(`slice[${start}, ${end}}]:\n`, arrayOfPulpits.slice(start, end));
+                console.log('==============================================================');
+
+                result.innerHTML =
+                    '<pre style="white-space: pre-wrap">' +
+                    JSON.stringify(arrayOfPulpits.slice(start, end), null, 4) +
+                    '</pre>';
+
+                $("#next").css("visibility", "visible");
+                $("#page").css("visibility", "visible");
+                $("#prev").css("visibility", "hidden");
+                page.innerHTML = 1;
+            });
+    });
+
+
+    $("#post").click(function post() {
+        $("#next").css("visibility", "hidden");
+        $("#prev").css("visibility", "hidden");
+        $("#page").css("visibility", "hidden");
+        countClicks = 0;
+
+        const data = {
+            pulpit: $("#input_pulpit").val(),
+            pulpit_name: $("#input_pulpit_name").val(),
+            faculty: $("#input_faculty").val(),
+            faculty_name: $("#input_faculty_name").val()
+        }
+        if (data.faculty == '' || data.pulpit == '' || data.pulpit_name == '') {
+            result.innerHTML = 'Fill all inputs';
+            return;
+        }
+
+        fetch(baseUrl, {
+            method: 'POST',
+            body: JSON.stringify(data),
+            headers: { 'content-type': 'application/json' }
+        })
+            .then(responce => responce.json())
+            .then(responseText => {
+                result.innerHTML =
+                    '<pre style="white-space: pre-wrap">' +
+                    JSON.stringify(responseText, null, 4) +
+                    '</pre>';
+            });
+    });
+
+
+    $("#put").click(function post() {
+        $("#next").css("visibility", "hidden");
+        $("#prev").css("visibility", "hidden");
+        $("#page").css("visibility", "hidden");
+        countClicks = 0;
+
+        const data = {
+            pulpit: $("#input_pulpit").val(),
+            pulpit_name: $("#input_pulpit_name").val(),
+            faculty: $("#input_faculty").val()
+        }
+        if (data.faculty == '' || data.pulpit == '' || data.pulpit_name == '') {
+            result.innerHTML = 'Fill all inputs';
+            return;
+        }
+
+        fetch(baseUrl, {
+            method: 'PUT',
+            body: JSON.stringify(data),
+            headers: { 'content-type': 'application/json' }
+        })
+            .then(responce => responce.json())
+            .then(responseText => {
+                result.innerHTML =
+                    '<pre style="white-space: pre-wrap">' +
+                    JSON.stringify(responseText, null, 4) +
+                    '</pre>';
+            });
+    });
+
+
+    $("#delete").click(function post() {
+        $("#next").css("visibility", "hidden");
+        $("#prev").css("visibility", "hidden");
+        $("#page").css("visibility", "hidden");
+        countClicks = 0;
+
+        const pulpit = $("#input_pulpit").val();
+        if (pulpit == '') {
+            result.innerHTML = 'Enter pulpit';
+            return;
+        }
+
+        fetch(baseUrl + pulpit, {
+            method: 'DELETE',
+            headers: { 'content-type': 'application/json' }
+        })
+            .then(responce => responce.json())
+            .then(responseText => {
+                result.innerHTML =
+                    '<pre style="white-space: pre-wrap">' +
+                    JSON.stringify(responseText, null, 4) +
+                    '</pre>';
+            });
+    })
+
+
+    $(document).on({
+        mouseenter: function () { $('#input_faculty_name').prop("disabled", (_, val) => val = true); },
+        mouseleave: function () { $('#input_faculty_name').prop("disabled", (_, val) => val = false); }
+    }, ".nameDisable");
+
+</script>
+</html>

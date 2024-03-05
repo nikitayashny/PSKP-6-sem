@@ -1,0 +1,7 @@
+npm install prisma
+npm install @prisma/client
+npx prisma init // вроде не обязательно
+npx prisma introspect
+
+// может пригодится
+npm i --save-dev prisma typescript ts-node @types/node nodemon
