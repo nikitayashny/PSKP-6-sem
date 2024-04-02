@@ -1,0 +1,4 @@
+npm install prisma
+npm install @prisma/client
+npm install --save-dev
+prisma migrate dev
