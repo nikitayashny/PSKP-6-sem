@@ -16,7 +16,9 @@
     "passport-local": "^1.0.0",
     "redis": "^4.6.13",
     "sequelize": "^6.37.0",
-    "tedious": "^16.7.0"
+    "tedious": "^16.7.0",
+    "webdav": "^5.5.0",
+    "webdav-server": "^2.6.2"
   },
   "devDependencies": {
     "prisma": "^5.12.0"
